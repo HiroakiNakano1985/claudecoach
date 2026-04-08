@@ -4,6 +4,18 @@
 
 **A local dashboard that visualizes Claude Code token usage and provides optimization suggestions**
 
+## Quick Start / すぐに使う
+
+```bash
+git clone https://github.com/HiroakiNakano1985/claudecoach.git
+cd claudecoach
+bash setup.sh                              # Install all dependencies
+python -m agent.cli ingest                 # Ingest your Claude Code logs
+uvicorn server.main:app --port 8000 &      # Start backend
+cd web && npm run dev &                    # Start frontend
+# → Open http://localhost:3000
+```
+
 ---
 
 ## Features / 機能
@@ -38,43 +50,15 @@
 - Node.js 18+
 - Claude Code installed (`~/.claude/projects/` directory exists)
 
-### Installation / インストール
-
-```bash
-git clone https://github.com/HiroakiNakano1985/claudecoach.git
-cd claudecoach
-bash setup.sh
-```
-
 ### Configuration / 設定
 
-Edit `.env` if needed / 必要に応じて`.env`を編集:
+`setup.sh` auto-creates `.env` from `.env.example`. Edit if needed:
 
-`.env` is auto-created by `setup.sh` from `.env.example`.
-`setup.sh`が`.env.example`から`.env`を自動作成します。
-
-Edit `.env` as needed / 必要に応じて`.env`を編集:
+`setup.sh`が`.env.example`から`.env`を自動作成します。必要に応じて編集してください:
 
 ```env
 CLAUDE_PROJECTS_PATH=~/.claude/projects   # Path to Claude Code logs
 CLAUDE_PLAN=auto                           # auto / pro / max_5x / max_20x / api
-```
-
-### Running / 起動
-
-```bash
-# 1. Ingest Claude Code logs / ログデータ取込
-claudecoach ingest
-# or: python -m agent.cli ingest
-
-# 2. Start backend / バックエンド起動
-uvicorn server.main:app --reload --port 8000
-
-# 3. Start frontend / フロントエンド起動
-cd web && npm run dev
-
-# 4. Open browser / ブラウザで開く
-# → http://localhost:3000
 ```
 
 ## Project Structure / ディレクトリ構成
@@ -115,6 +99,22 @@ claudecoach/
 - [x] **Phase 1**: Data ingestion, dashboard, plan detection & ROI
 - [ ] **Phase 2**: Pattern analysis, Haiku-powered improvement suggestions
 - [ ] **Phase 3**: File watcher (auto-ingest), subscription & deployment
+
+## Pricing / 料金
+
+ClaudeCoach is currently **free and open source**.
+
+In the future, when we introduce cloud-hosted features (AWS deployment, automated weekly reports via Paperclip AI, etc.), a paid subscription plan will be offered. The core local functionality will remain free.
+
+現在ClaudeCoachは**無料・オープンソース**です。
+
+将来的にクラウド機能（AWSデプロイ、Paperclip AIによる週次レポート自動化など）を導入する際に、有料サブスクリプションプランを提供予定です。ローカルで動作するコア機能は引き続き無料です。
+
+## Disclaimer / 免責事項
+
+ClaudeCoach is an independent project and is **not affiliated with, endorsed by, or associated with Anthropic or Claude in any way**. "Claude" is a trademark of Anthropic, PBC.
+
+ClaudeCoachは独立したプロジェクトであり、**Anthropic社およびClaudeとは一切関係ありません**。「Claude」はAnthropic, PBC の商標です。
 
 ## License / ライセンス
 
