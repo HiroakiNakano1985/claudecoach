@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Data (個人のセッションデータ)
+claudecoach_data.json
+*.db
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (web/)
+web/node_modules/
+web/.next/
+web/out/
+
+# Claude Code
+.claude/
+
+# Project internal docs
+CLAUDE.md
+DISCUSSION_SUMMARY.md

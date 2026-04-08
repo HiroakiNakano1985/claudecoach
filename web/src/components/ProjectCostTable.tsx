@@ -1,0 +1,75 @@
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import type { ProjectBreakdown } from "@/lib/api";
+
+function formatTokens(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
+  return String(n);
+}
+
+export function ProjectCostTable({ projects }: { projects: ProjectBreakdown[] }) {
+  const maxCost = Math.max(...projects.map((p) => p.api_equivalent_cost), 0.01);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>プロジェクト別コスト</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {projects.length === 0 ? (
+          <p className="text-muted-foreground text-sm py-4 text-center">
+            データがありません
+          </p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>プロジェクト</TableHead>
+                <TableHead className="text-right">セッション</TableHead>
+                <TableHead className="text-right">トークン</TableHead>
+                <TableHead className="text-right">API換算</TableHead>
+                <TableHead className="w-32"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {projects.map((p) => (
+                <TableRow key={p.project_name}>
+                  <TableCell className="font-medium truncate max-w-[200px]">
+                    {p.project_name}
+                  </TableCell>
+                  <TableCell className="text-right">{p.session_count}</TableCell>
+                  <TableCell className="text-right">
+                    {formatTokens(p.total_input + p.total_output)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    ${p.api_equivalent_cost.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-2 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-primary"
+                        style={{
+                          width: `${(p.api_equivalent_cost / maxCost) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
