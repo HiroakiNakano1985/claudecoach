@@ -26,13 +26,21 @@ cd web && npm run dev &                    # Start frontend
 - **Plan ROI Calculation** / プランROI計算
   - Auto-detects your plan (Pro / Max 5x / Max 20x / API) / プラン自動検出
   - Shows API-equivalent cost and ROI ratio / API換算コスト・ROI倍率表示
+  - *Note: ROI is estimated based on API pay-as-you-go pricing. Actual subscription plan usage accounting may differ.*
+  - *※ ROIはAPI従量課金の単価に基づく推定値です。サブスクリプションプランの実際の使用量計算とは異なる場合があります。*
 - **Privacy-First** / プライバシー重視
   - Runs entirely on localhost / 完全ローカル動作
   - Only extracts metadata (token counts, timestamps) — never stores conversation content / メタデータのみ抽出、会話内容は一切保存しません
 
 ## Screenshots / スクリーンショット
 
-*Coming soon*
+**English**
+
+![Dashboard - English](docs/dashboard_en.png)
+
+**Japanese / 日本語**
+
+![Dashboard - 日本語](docs/dashboard_ja.png)
 
 ## Tech Stack / 技術スタック
 

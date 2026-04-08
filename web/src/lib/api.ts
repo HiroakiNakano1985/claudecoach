@@ -69,8 +69,12 @@ async function fetchAPI<T>(path: string): Promise<T> {
   return res.json();
 }
 
-export function getDashboard() {
-  return fetchAPI<DashboardSummary>("/dashboard");
+export function getDashboard(plan?: string, lang?: string) {
+  const params = new URLSearchParams();
+  if (plan) params.set("plan", plan);
+  if (lang) params.set("lang", lang);
+  const query = params.toString() ? `?${params}` : "";
+  return fetchAPI<DashboardSummary>(`/dashboard${query}`);
 }
 
 export function getSessions(limit = 50, offset = 0) {

@@ -10,34 +10,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { ProjectBreakdown } from "@/lib/api";
+import type { Lang } from "@/lib/i18n";
+import { t, formatTokensI18n } from "@/lib/i18n";
 
-function formatTokens(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
-  return String(n);
-}
-
-export function ProjectCostTable({ projects }: { projects: ProjectBreakdown[] }) {
+export function ProjectCostTable({ projects, lang = "ja" }: { projects: ProjectBreakdown[]; lang?: Lang }) {
+  const i = t(lang);
   const maxCost = Math.max(...projects.map((p) => p.api_equivalent_cost), 0.01);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>プロジェクト別コスト</CardTitle>
+        <CardTitle>{i.projectCost}</CardTitle>
       </CardHeader>
       <CardContent>
         {projects.length === 0 ? (
           <p className="text-muted-foreground text-sm py-4 text-center">
-            データがありません
+            {i.noData}
           </p>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>プロジェクト</TableHead>
-                <TableHead className="text-right">セッション</TableHead>
-                <TableHead className="text-right">トークン</TableHead>
-                <TableHead className="text-right">API換算</TableHead>
+                <TableHead>{i.project}</TableHead>
+                <TableHead className="text-right">{i.sessions}</TableHead>
+                <TableHead className="text-right">{i.tokenCount}</TableHead>
+                <TableHead className="text-right">{i.apiEquivalent}</TableHead>
                 <TableHead className="w-32"></TableHead>
               </TableRow>
             </TableHeader>
@@ -49,7 +46,7 @@ export function ProjectCostTable({ projects }: { projects: ProjectBreakdown[] })
                   </TableCell>
                   <TableCell className="text-right">{p.session_count}</TableCell>
                   <TableCell className="text-right">
-                    {formatTokens(p.total_input + p.total_output)}
+                    {formatTokensI18n(p.total_input + p.total_output, lang)}
                   </TableCell>
                   <TableCell className="text-right">
                     ${p.api_equivalent_cost.toFixed(2)}

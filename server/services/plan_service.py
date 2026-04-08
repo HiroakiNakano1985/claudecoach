@@ -3,6 +3,12 @@ plan_service.py - Plan auto-detection and ROI calculation.
 
 Detects which Claude plan the user is on based on token consumption
 patterns in 5-hour windows, and calculates ROI vs API pricing.
+
+NOTE: ROI is an *estimate* based on API pay-as-you-go pricing.
+Max plan usage limits may weight token types differently from API billing.
+In particular, cache_read_input_tokens do NOT count toward API ITPM rate
+limits for current models (Opus 4.x, Sonnet 4.x, Haiku 4.5), so the
+actual "value" of cached tokens on a Max plan may differ from this estimate.
 """
 
 from __future__ import annotations
@@ -88,7 +94,14 @@ def calc_api_equivalent_cost(
     cache_read_tokens: int = 0,
     cache_creation_tokens: int = 0,
 ) -> float:
-    """Calculate what the usage would cost on the API."""
+    """
+    Estimate what the same usage would cost on the API (pay-as-you-go).
+
+    This is a rough estimate — Max plan usage limits may not weight
+    token types identically to API billing. cache_read tokens are
+    charged at 10% of standard input price on the API, and do NOT
+    count toward ITPM rate limits for current models.
+    """
     return (
         input_tokens * INPUT_TOKEN_PRICE
         + output_tokens * OUTPUT_TOKEN_PRICE
@@ -97,27 +110,37 @@ def calc_api_equivalent_cost(
     )
 
 
-def calc_roi(plan: str, api_equivalent_cost: float) -> dict[str, Any]:
+def calc_roi(plan: str, api_equivalent_cost: float, lang: str = "ja") -> dict[str, Any]:
     """Calculate ROI for the detected plan."""
     cost = PLAN_COSTS.get(plan)
     if cost is None:
+        msg = "APIプランはROI計算対象外" if lang == "ja" else "ROI not applicable for API plan"
         return {
             "plan": "api",
             "plan_cost": None,
             "api_equivalent": api_equivalent_cost,
             "roi_ratio": None,
             "is_profitable": None,
-            "message": "APIプランはROI計算対象外",
+            "message": msg,
         }
 
     roi = api_equivalent_cost / cost if cost > 0 else 0.0
     is_profitable = roi >= 1.0
 
+    plan_labels_ja = {"pro": "Pro", "max_5x": "MAX 5x", "max_20x": "MAX 20x"}
+    plan_label = plan_labels_ja.get(plan, plan)
+
     if is_profitable:
-        message = f"MAXプランの{roi:.1f}倍の元を取っています"
+        message = (
+            f"{plan_label}プランの{roi:.1f}倍の元を取っています" if lang == "ja"
+            else f"Getting {roi:.1f}x return on your {plan_label} plan"
+        )
     else:
         remaining = cost - api_equivalent_cost
-        message = f"あと${remaining:.2f}分使うと元が取れます"
+        message = (
+            f"あと${remaining:.2f}分使うと元が取れます" if lang == "ja"
+            else f"Use ${remaining:.2f} more to break even"
+        )
 
     return {
         "plan": plan,
@@ -132,6 +155,7 @@ def calc_roi(plan: str, api_equivalent_cost: float) -> dict[str, Any]:
 def get_plan_and_roi(
     recent_sessions: list[dict[str, Any]],
     monthly_sessions: list[dict[str, Any]] | None = None,
+    lang: str = "ja",
 ) -> dict[str, Any]:
     """
     Detect plan from recent_sessions (last 8 days),
@@ -150,5 +174,5 @@ def get_plan_and_roi(
         total_input, total_output, total_cache_read, total_cache_creation,
     )
 
-    roi = calc_roi(plan, api_cost)
+    roi = calc_roi(plan, api_cost, lang=lang)
     return roi
