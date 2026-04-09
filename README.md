@@ -6,8 +6,40 @@
 
 ## Quick Start / すぐに使う
 
-### Mac / Linux
+### One-liner Install / ワンライナーインストール
 
+**Mac / Linux:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/HiroakiNakano1985/claudecoach/main/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/HiroakiNakano1985/claudecoach/main/install.ps1 | iex
+```
+
+### Start / 起動
+
+**Mac / Linux:**
+```bash
+cd claudecoach && bash start.sh
+```
+
+**Windows (PowerShell):**
+```powershell
+cd claudecoach; .\start.ps1
+```
+
+This will ingest your logs, start both servers, and open http://localhost:3000 in your browser.
+
+ログの取込、サーバー起動、ブラウザでのダッシュボード表示まで自動で行います。
+
+### Manual Setup / 手動セットアップ
+
+<details>
+<summary>Click to expand / クリックで展開</summary>
+
+**Mac / Linux:**
 ```bash
 git clone https://github.com/HiroakiNakano1985/claudecoach.git
 cd claudecoach
@@ -18,18 +50,16 @@ cd web && npm run dev &                    # Start frontend
 # → Open http://localhost:3000
 ```
 
-### Windows
-
+**Windows (PowerShell):**
 ```powershell
 git clone https://github.com/HiroakiNakano1985/claudecoach.git
 cd claudecoach
 pip install -r requirements.txt            # Install Python dependencies
-cd web && npm install && cd ..             # Install Node.js dependencies
+cd web; npm install; cd ..                 # Install Node.js dependencies
 copy .env.example .env                     # Create .env config
 
 python -m agent.cli ingest                 # Ingest your Claude Code logs
 
-# Open two separate terminals:
 # Terminal 1 - Backend:
 uvicorn server.main:app --port 8000
 
@@ -40,9 +70,7 @@ npm run dev
 # → Open http://localhost:3000
 ```
 
-> **Note for Windows users / Windowsユーザーへ:**
-> `bash setup.sh` is for Mac/Linux. On Windows, run the commands above manually, or use Git Bash / WSL.
-> `setup.sh`はMac/Linux用です。Windowsでは上記のコマンドを手動で実行するか、Git Bash / WSLをご利用ください。
+</details>
 
 ---
 
