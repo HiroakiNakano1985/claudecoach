@@ -10,21 +10,24 @@ import { StatCard } from "@/components/StatCard";
 import { TokenUsageChart } from "@/components/TokenUsageChart";
 import { ProjectCostTable } from "@/components/ProjectCostTable";
 
+type Period = "weekly" | "monthly";
+
 export default function Dashboard() {
   const [data, setData] = useState<DashboardSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [plan, setPlan] = useState<string>("max_5x");
   const [lang, setLang] = useState<Lang>("ja");
+  const [period, setPeriod] = useState<Period>("weekly");
 
   useEffect(() => {
     setError(null);
-    getDashboard(plan, lang)
+    getDashboard(plan, lang, period)
       .then((d) => {
         setData(d);
         if (!plan) setPlan(d.plan);
       })
       .catch((e) => setError(e.message));
-  }, [plan, lang]);
+  }, [plan, lang, period]);
 
   const i = t(lang);
 
@@ -51,6 +54,10 @@ export default function Dashboard() {
   const totalTokens = data.total_input + data.total_output;
   const savingsEstimate = data.api_equivalent_cost * 0.4;
 
+  const periodLabel = period === "weekly"
+    ? (lang === "ja" ? "週次" : "Weekly")
+    : (lang === "ja" ? "月次" : "Monthly");
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
@@ -59,7 +66,12 @@ export default function Dashboard() {
           <div className="flex items-center gap-3">
             <PlanSelector current={plan} onChange={setPlan} />
             <LangToggle current={lang} onChange={setLang} />
-            <span className="text-sm text-muted-foreground">{i.monthlySummary}</span>
+            <button
+              onClick={() => setPeriod(period === "weekly" ? "monthly" : "weekly")}
+              className="px-3 py-1 text-sm font-medium rounded border border-border hover:bg-muted transition-colors"
+            >
+              {periodLabel}
+            </button>
           </div>
         </div>
       </header>
@@ -85,7 +97,7 @@ export default function Dashboard() {
         </div>
         <p className="text-xs text-muted-foreground">{i.roiDisclaimer}</p>
 
-        <TokenUsageChart data={data.weekly_tokens} lang={lang} />
+        <TokenUsageChart data={data.weekly_tokens} lang={lang} period={period} />
 
         <ProjectCostTable projects={data.projects} lang={lang} />
       </main>

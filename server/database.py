@@ -106,8 +106,8 @@ class Database:
             "total_clarifications": sum(s.get("clarification_count", 0) for s in sessions),
         }
 
-    def get_project_breakdown(self) -> list[dict[str, Any]]:
-        sessions = self._recent_sessions(30)
+    def get_project_breakdown(self, days: int = 30) -> list[dict[str, Any]]:
+        sessions = self._recent_sessions(days)
         projects: dict[str, dict] = {}
         for s in sessions:
             name = s["project_name"]
@@ -161,6 +161,39 @@ class Database:
             w["session_count"] += 1
 
         return sorted(weekly.values(), key=lambda w: w["week"])
+
+    def get_monthly_tokens(self, months: int = 6) -> list[dict[str, Any]]:
+        cutoff = (datetime.utcnow() - timedelta(days=months * 31)).isoformat()
+        sessions = [
+            s for s in self._store["sessions"].values()
+            if s.get("timestamp", "") >= cutoff
+        ]
+
+        monthly: dict[str, dict] = {}
+        for s in sessions:
+            ts = s.get("timestamp", "")
+            if not ts:
+                continue
+            try:
+                dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                month_key = f"{dt.year}-{dt.month:02d}"
+            except ValueError:
+                continue
+            if month_key not in monthly:
+                monthly[month_key] = {
+                    "week": month_key,
+                    "input_tokens": 0,
+                    "output_tokens": 0,
+                    "cache_read_tokens": 0,
+                    "session_count": 0,
+                }
+            m = monthly[month_key]
+            m["input_tokens"] += s.get("input_tokens", 0)
+            m["output_tokens"] += s.get("output_tokens", 0)
+            m["cache_read_tokens"] += s.get("cache_read_tokens", 0)
+            m["session_count"] += 1
+
+        return sorted(monthly.values(), key=lambda m: m["week"])
 
     def get_sessions_last_n_days(self, days: int = 8) -> list[dict[str, Any]]:
         return self._recent_sessions(days)

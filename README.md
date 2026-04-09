@@ -6,6 +6,8 @@
 
 ## Quick Start / すぐに使う
 
+### Mac / Linux
+
 ```bash
 git clone https://github.com/HiroakiNakano1985/claudecoach.git
 cd claudecoach
@@ -15,6 +17,32 @@ uvicorn server.main:app --port 8000 &      # Start backend
 cd web && npm run dev &                    # Start frontend
 # → Open http://localhost:3000
 ```
+
+### Windows
+
+```powershell
+git clone https://github.com/HiroakiNakano1985/claudecoach.git
+cd claudecoach
+pip install -r requirements.txt            # Install Python dependencies
+cd web && npm install && cd ..             # Install Node.js dependencies
+copy .env.example .env                     # Create .env config
+
+python -m agent.cli ingest                 # Ingest your Claude Code logs
+
+# Open two separate terminals:
+# Terminal 1 - Backend:
+uvicorn server.main:app --port 8000
+
+# Terminal 2 - Frontend:
+cd web
+npm run dev
+
+# → Open http://localhost:3000
+```
+
+> **Note for Windows users / Windowsユーザーへ:**
+> `bash setup.sh` is for Mac/Linux. On Windows, run the commands above manually, or use Git Bash / WSL.
+> `setup.sh`はMac/Linux用です。Windowsでは上記のコマンドを手動で実行するか、Git Bash / WSLをご利用ください。
 
 ---
 
@@ -107,6 +135,14 @@ claudecoach/
 - [x] **Phase 1**: Data ingestion, dashboard, plan detection & ROI
 - [ ] **Phase 2**: Pattern analysis, Haiku-powered improvement suggestions
 - [ ] **Phase 3**: File watcher (auto-ingest), subscription & deployment
+
+## Feedback / フィードバック
+
+> *"Hiro, this is a very useful project, thank you! My only advice would be that I had issues getting it started since I'm on Windows. It would be helpful to have separate setup instructions for Windows users. Other than that, it worked great!"*
+> — ESADE MBA student
+
+> *「Hiroさん、とても便利なプロジェクトですね、ありがとうございます！ 一つだけアドバイスするとしたら、Windowsを使っているので起動時に問題が発生しました。Windowsユーザー向けのセットアップ手順を別途提供してもらえると助かります。それ以外は素晴らしく動きました！」*
+> — ESADEビジネススクール MBA学生
 
 ## Pricing / 料金
 

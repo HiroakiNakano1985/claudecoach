@@ -69,10 +69,11 @@ async function fetchAPI<T>(path: string): Promise<T> {
   return res.json();
 }
 
-export function getDashboard(plan?: string, lang?: string) {
+export function getDashboard(plan?: string, lang?: string, period?: string) {
   const params = new URLSearchParams();
   if (plan) params.set("plan", plan);
   if (lang) params.set("lang", lang);
+  if (period) params.set("period", period);
   const query = params.toString() ? `?${params}` : "";
   return fetchAPI<DashboardSummary>(`/dashboard${query}`);
 }
